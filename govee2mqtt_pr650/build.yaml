@@ -1,0 +1,6 @@
+build_from:
+  amd64: "ghcr.io/home-assistant/amd64-base-debian:bookworm"
+labels:
+  org.opencontainers.image.title: "Home Assistant Add-on: Govee to MQTT Bridge (PR650)"
+  org.opencontainers.image.description: "Govee2mqtt with PR #650 fix (APP_VERSION 7.4.10)"
+  org.opencontainers.image.source: "https://github.com/JacobBratcher/govee2mqtt-pr650"
