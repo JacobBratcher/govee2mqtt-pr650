@@ -1,0 +1,65 @@
+diff --git a/src/hass_mqtt/enumerator.rs b/src/hass_mqtt/enumerator.rs
+index bd41ec92..26e42bf0 100644
+--- a/src/hass_mqtt/enumerator.rs
++++ b/src/hass_mqtt/enumerator.rs
+@@ -200,12 +200,16 @@ pub async fn enumerate_entities_for_device<'a>(
+                     entities.add(TargetTemperatureEntity::new(&d, state, cap).await?);
+                 }
+ 
+-                kind => {
+-                    log::warn!(
+-                        "Do something about {kind:?} {} for {d} {cap:?}",
+-                        cap.instance
+-                    );
++                DeviceCapabilityKind::Other(ref s) if s == "devices.capabilities.movie_setting" => {
++               // Ignore movieMode capability (not yet supported)
+                 }
++
++               kind => {
++                   log::warn!(
++                       "Do something about {kind:?} {} for {d} {cap:?}",
++                       cap.instance
++                     );
++                 }
+             }
+         }
+ 
+diff --git a/src/platform_api.rs b/src/platform_api.rs
+index b82d7525..ef60c80e 100644
+--- a/src/platform_api.rs
++++ b/src/platform_api.rs
+@@ -958,6 +958,7 @@ pub struct IntegerRange {
+ 
+ #[derive(Deserialize, Serialize, Debug, Clone)]
+ pub struct EnumOption {
++    #[serde(deserialize_with = "deserialize_name_field")]
+     pub name: String,
+     #[serde(default)]
+     pub value: JsonValue,
+@@ -1163,3 +1164,26 @@ mod test {
+         );
+     }
+ }
++
++fn deserialize_name_field<'de, D>(deserializer: D) -> Result<String, D::Error>
++where
++    D: serde::Deserializer<'de>,
++{
++    use serde_json::Value;
++
++    let v = Value::deserialize(deserializer)?;
++
++    match v {
++        Value::String(s) => Ok(s),
++        Value::Object(map) => {
++            if let Some(Value::String(en)) = map.get("en") {
++                Ok(en.clone())
++            } else if let Some(Value::String(key)) = map.get("key") {
++                Ok(key.clone())
++            } else {
++                Ok(serde_json::Value::Object(map).to_string())
++            }
++        }
++        _ => Ok(v.to_string()),
++    }
++}
