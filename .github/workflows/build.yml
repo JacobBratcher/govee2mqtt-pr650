@@ -43,9 +43,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # Both archs by default. Remove linux/arm64 if your HA is amd64-only
-          # to cut build time from ~30 min to ~8 min.
-          platforms: linux/amd64,linux/arm64
+          # amd64-only — HA runs on a Proxmox VM (x86_64).
+          platforms: linux/amd64
           push: true
           tags: |
             ghcr.io/${{ steps.img.outputs.name }}:latest
