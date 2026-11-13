@@ -83,6 +83,10 @@ if bashio::config.has_value scan ; then
   export GOVEE_LAN_SCAN="$(bashio::config scan)"
 fi
 
+if bashio::config.has_value govee_app_version ; then
+  export GOVEE_APP_VERSION="$(bashio::config govee_app_version)"
+fi
+
 if bashio::config.has_value temperature_scale ; then
   export GOVEE_TEMPERATURE_SCALE="$(bashio::config temperature_scale)"
 fi

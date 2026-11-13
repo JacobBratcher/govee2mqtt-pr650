@@ -1,0 +1,34 @@
+diff --git a/src/undoc_api.rs b/src/undoc_api.rs
+index 06802c1..552a6e7 100644
+--- a/src/undoc_api.rs
++++ b/src/undoc_api.rs
+@@ -16,7 +16,7 @@ use uuid::Uuid;
+ 
+ // <https://github.com/constructorfleet/homebridge-ultimate-govee/blob/main/src/data/clients/RestClient.ts>
+ 
+-const DEFAULT_APP_VERSION: &str = "7.4.10";
++const DEFAULT_APP_VERSION: &str = "7.7.02";
+ static APP_VERSION_OVERRIDE: once_cell::sync::OnceCell<String> = once_cell::sync::OnceCell::new();
+ 
+ fn app_version() -> &'static str {
+@@ -485,7 +485,19 @@ impl GoveeUndocumentedApi {
+     }
+ 
+     pub async fn parse_one_clicks(&self) -> anyhow::Result<Vec<ParsedOneClick>> {
+-        let token = self.login_community().await?;
++        // community-api.govee.com now rejects accounts that the app login
++        // accepts ("The mail hasn't been registered."). exec-plat/home is an
++        // app2 endpoint, so fall back to the app2 account token.
++        let token = match self.login_community().await {
++            Ok(token) => token,
++            Err(err) => {
++                log::warn!(
++                    "Community login failed ({err:#}); using the app account token for one-clicks"
++                );
++                let account = self.login_account_cached().await?;
++                account.token.to_string()
++            }
++        };
+         let res = self.get_saved_one_click_shortcuts(&token).await?;
+         let mut result = vec![];
+ 

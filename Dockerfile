@@ -22,6 +22,10 @@ RUN git clone --depth 1 --branch "${SOURCE_REF}" "${SOURCE_REPO}" .
 COPY patches/ /patches/
 RUN git apply --verbose /patches/0001-pr645-h66a1-i18n.patch
 
+# One-clicks: fall back to the app account token when community-api login is
+# rejected, and default to Govee Home app version 7.7.02
+RUN git apply --verbose /patches/0002-oneclick-app-token-fallback.patch
+
 RUN cargo build --release --bin govee
 RUN strip target/release/govee
 
@@ -55,7 +59,7 @@ COPY --from=builder --chown=govee:govee /data /data
 
 USER govee:govee
 LABEL org.opencontainers.image.source="https://github.com/manuveli/govee2mqtt"
-LABEL org.opencontainers.image.description="govee2mqtt built from manuveli PR #650 (APP_VERSION 7.4.10) + wez PR #645 (H66A1 i18n fix)"
+LABEL org.opencontainers.image.description="govee2mqtt built from manuveli PR #650 + wez PR #645 (H66A1 i18n fix) + one-click app-token fallback (APP_VERSION 7.7.02)"
 
 ENV \
   RUST_BACKTRACE=full \
