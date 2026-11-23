@@ -1,5 +1,5 @@
 name: Govee to MQTT Bridge (PR650)
-version: "1.2.0"
+version: "1.2.1"
 slug: govee2mqtt_pr650
 description: Govee to MQTT bridge built from manuveli PR #650 (APP_VERSION 7.7.02, one-click fix)
 url: https://github.com/JacobBratcher/govee2mqtt-pr650

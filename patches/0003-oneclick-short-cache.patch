@@ -1,12 +1,16 @@
 diff --git a/src/undoc_api.rs b/src/undoc_api.rs
-index 552a6e7..4f61f4a 100644
+index 552a6e7..885f3b5 100644
 --- a/src/undoc_api.rs
 +++ b/src/undoc_api.rs
-@@ -449,7 +449,9 @@ impl GoveeUndocumentedApi {
+@@ -448,8 +448,12 @@ impl GoveeUndocumentedApi {
+         cache_get(
              CacheGetOptions {
                  topic: "undoc-api",
-                 key: "one-click-shortcuts",
+-                key: "one-click-shortcuts",
 -                soft_ttl: ONE_DAY,
++                // New key so a list cached under the old one-day TTL is not
++                // reused: the stored entry keeps the expiry it was written with.
++                key: "one-click-shortcuts-v2",
 +                // Refresh the Tap-to-Run list every 5 minutes instead of once a
 +                // day, so newly created scenes reach Home Assistant promptly.
 +                soft_ttl: Duration::from_secs(300),
