@@ -26,6 +26,10 @@ RUN git apply --verbose /patches/0001-pr645-h66a1-i18n.patch
 # rejected, and default to Govee Home app version 7.7.02
 RUN git apply --verbose /patches/0002-oneclick-app-token-fallback.patch
 
+# One-clicks: cache the Tap-to-Run list for 5 minutes instead of a day, so
+# new scenes show up after a restart instead of up to a day later
+RUN git apply --verbose /patches/0003-oneclick-short-cache.patch
+
 RUN cargo build --release --bin govee
 RUN strip target/release/govee
 
@@ -59,7 +63,7 @@ COPY --from=builder --chown=govee:govee /data /data
 
 USER govee:govee
 LABEL org.opencontainers.image.source="https://github.com/manuveli/govee2mqtt"
-LABEL org.opencontainers.image.description="govee2mqtt built from manuveli PR #650 + wez PR #645 (H66A1 i18n fix) + one-click app-token fallback (APP_VERSION 7.7.02)"
+LABEL org.opencontainers.image.description="govee2mqtt built from manuveli PR #650 + wez PR #645 (H66A1 i18n fix) + one-click app-token fallback (APP_VERSION 7.7.02) + 5-minute one-click cache"
 
 ENV \
   RUST_BACKTRACE=full \
